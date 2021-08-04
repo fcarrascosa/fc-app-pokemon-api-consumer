@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  linter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    volumes:
+      - ./src:/workspace/src
+      - ./test:/workspace/test
+      - ./stories:/workspace/stories
+      - ./.gitignore:/workspace/.gitignore
+    restart: unless-stopped
+    entrypoint: npm run format:watch
+  tester:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: tester
+    volumes:
+      - ./src:/workspace/src
+      - ./test:/workspace/test
+      - ./coverage:/workspace/coverage
+    restart: unless-stopped
+    entrypoint: npm run test:watch
+    tty: true
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    restart: unless-stopped
+    volumes:
+      - ./src:/workspace/src
+    ports:
+      - "8000:8000"
